@@ -1,6 +1,7 @@
 import bcryptjs from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.utils.js";
 import { User } from "../models/user.model.js";
+import { sendVerificationEmail } from "../mailtrap/emails.js";
 
 const signup = async (req,res) => {
     // res.send("Signup route");
@@ -30,6 +31,8 @@ const signup = async (req,res) => {
         
         generateTokenAndSetCookie(res, newUser._id);
 
+        await sendVerificationEmail(newUser.email, verificationToken);
+
         // 201 - something is created
         res
         .status(201)
@@ -51,6 +54,8 @@ const signup = async (req,res) => {
         })
     }
 }
+
+
 
 const login = async (req,res) => {
     res.send("Login route");
