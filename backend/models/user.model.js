@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
-        username: {
+        password: {
             type: String,
             required: true,
         },
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
             default: false,
         },
         resetPasswordToken: String,
-        resetPasswordExpiresAt: DataTransfer,
+        resetPasswordExpiresAt: Date,
         verificationToken: String,
         verificationTokenExpiresAt: Date
     },
