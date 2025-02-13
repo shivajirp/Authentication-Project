@@ -1,7 +1,9 @@
 import bcryptjs from "bcryptjs";
+import crypto from "crypto";
+
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.utils.js";
 import { User } from "../models/user.model.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail, sendResetPasswordEmail } from "../mailtrap/emails.js";
 
 const signup = async (req,res) => {
     // res.send("Signup route");
@@ -103,7 +105,60 @@ const verifyMail = async (req,res) => {
 }
 
 const login = async (req,res) => {
-    res.send("Login route");
+    // res.send("Login route");
+    const {email, password} = req.body;
+
+    try {
+        const user = await User.findOne({email});
+
+        if(!user) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+        
+        console.log("problem in bcrypt")
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        console.log("no not in bcrypt")
+        
+        if(!isPasswordValid) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+
+        generateTokenAndSetCookie(res, user._id);
+
+        user.lastLogin = new Date()
+
+        return res
+        .status(200)
+        .json({
+            success: true,
+            message: "Logged in successfully",
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })
+
+    } catch (error) {
+        console.log("Error while logging in ", error);
+
+        return res
+        .status(400)
+        .json({
+            success: false,
+            message: error.message,
+        })
+
+    }
 }
 
 const logout = async (req,res) => {
@@ -116,9 +171,48 @@ const logout = async (req,res) => {
     })
 }
 
+const forgotPassword = async (req,res) => {
+    const {email} = req.body;
+
+    try {
+        const user = await User.findOne({email});
+
+        if(!user) {
+            throw new Error("invalid credentials")
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;  //1 hour
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt;
+
+        await user.save();
+        await sendResetPasswordEmail(user.email, `${process.env.CLIENT}/reset-password/${resetToken}`);
+
+        return res
+        .status(200)
+        .json({
+            success: true,
+            message: "Password reset link sent to your email"
+        })
+
+    } catch (error) {
+        console.log("Invalid user credentials")
+
+        res
+        .status(400)
+        .json({
+            success: false,
+            message: "Invalid user credentials"
+        })
+    }
+}
+
 export {
     signup,
     login,
     logout,
-    verifyMail
+    verifyMail,
+    forgotPassword
 }
