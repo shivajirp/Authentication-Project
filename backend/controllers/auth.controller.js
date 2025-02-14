@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.utils.js";
 import { User } from "../models/user.model.js";
-import { sendVerificationEmail, sendWelcomeEmail, sendResetPasswordEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail, sendResetPasswordEmail, sendPasswordResetSuccess } from "../mailtrap/emails.js";
 
 const signup = async (req,res) => {
     // res.send("Signup route");
@@ -209,10 +209,101 @@ const forgotPassword = async (req,res) => {
     }
 }
 
+const resetPassword = async(req,res) => {
+    // get token
+    // get new password
+    // find user using token
+    // hash password
+    // update user password, resetPassword Token and it expiration time
+    // save the user
+    // send reset success mail
+    
+    const {token} = req.params;
+    const {password} = req.body;
+    try {
+        
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: { $gt: Date.now() },
+        })
+    
+        if(!user) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: "Invalid or expired token"
+            })
+        }
+    
+        const hashedPassword = await bcryptjs.hash(password, 10);
+    
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpiresAt = undefined;
+    
+        user.save();
+    
+        await sendPasswordResetSuccess(user.email);
+
+        res
+        .status(200)
+        .json({
+            success: true,
+            message: "Reset password successful",
+        })
+
+    } catch (error) {
+        console.log("Error resetting the password")
+        res
+        .status(400)
+        .json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+const checkAuth = async(req,res) => {
+    const userId = req.userId;
+
+    try {
+        const user = await User.findById(userId).select("-password");
+    
+        if(!user) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        
+        return res
+        .status(200)
+        .json({
+            success: true,
+            user
+        })
+
+    } catch (error) {
+        console.log("Error in check-auth", error);
+
+        return res
+            .status(400)
+            .json({
+                success: false,
+                message: error.message
+            })
+    }
+}
+
 export {
     signup,
     login,
     logout,
     verifyMail,
-    forgotPassword
+    forgotPassword,
+    resetPassword,
+    checkAuth
 }
