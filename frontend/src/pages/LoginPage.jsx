@@ -9,18 +9,17 @@ import { useAuthStore } from '../store/useAuthStore.js';
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const isLoading = false;
 
-  const {login, error} = useAuthStore();
+  const {login, error, isLoading} = useAuthStore();
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      await login(email, password);
-      console.log("Login successsfull!... Well Done!!!")
-    } catch (error) {
-      console.log(error)
-    }
+    await login(email, password);
+    // try {
+    //   console.log("Login successsfull!... Well Done!!!")                  
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
 
 
@@ -70,7 +69,7 @@ const LoginPage = () => {
             whileHover={{scale: 1.02}}
             whileTap={{scale: 0.999}}
             type='submit'
-            disabled='isLoading'
+            disabled={isLoading}
           >
             {isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "Login"}
           </motion.button>
