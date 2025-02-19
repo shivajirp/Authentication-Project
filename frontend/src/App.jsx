@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard.jsx"
 import SignUpPage from "./pages/SignUpPage.jsx"
 import LoginPage from "./pages/LoginPage.jsx"
 import EmailVerificationPage from "./pages/EmailVerificationPage.jsx"
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx"
 
 
 // protect routes that require authentication
@@ -88,7 +89,15 @@ function App() {
           element={
             <EmailVerificationPage />
           } 
-        /> 
+        />
+
+        <Route 
+          path="/forgot-password"
+          element={
+            <ForgotPasswordPage />
+          }
+        />
+
       </Routes>
       <Toaster />
 
