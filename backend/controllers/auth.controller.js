@@ -1,5 +1,6 @@
 import bcryptjs from "bcryptjs";
-import crypto from "crypto";
+// import crypto from "crypto";
+import { randomUUID } from "crypto";
 
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.utils.js";
 import { User } from "../models/user.model.js";
@@ -181,7 +182,8 @@ const forgotPassword = async (req,res) => {
             throw new Error("invalid credentials")
         }
 
-        const resetToken = crypto.randomBytes(20).toString("hex");
+        // const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetToken = randomUUID();
         const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;  //1 hour
 
         user.resetPasswordToken = resetToken;

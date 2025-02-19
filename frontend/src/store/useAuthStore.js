@@ -63,6 +63,8 @@ export const useAuthStore = create((set) => ({
         set({isLoading: false, error: error.response.data.message});
         throw error;
     }
-  }
+  },
+
+  
 
 }))
