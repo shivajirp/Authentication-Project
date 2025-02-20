@@ -9,6 +9,7 @@ import SignUpPage from "./pages/SignUpPage.jsx"
 import LoginPage from "./pages/LoginPage.jsx"
 import EmailVerificationPage from "./pages/EmailVerificationPage.jsx"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx"
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx"
 
 
 // protect routes that require authentication
@@ -94,7 +95,18 @@ function App() {
         <Route 
           path="/forgot-password"
           element={
-            <ForgotPasswordPage />
+            <RedirectAuthenticatedUser>
+              <ForgotPasswordPage />
+            </RedirectAuthenticatedUser>
+          }
+        />
+        
+        <Route 
+          path="/reset-password/:token"
+          element={
+            <RedirectAuthenticatedUser>
+              <ResetPasswordPage />
+            </RedirectAuthenticatedUser>
           }
         />
 
