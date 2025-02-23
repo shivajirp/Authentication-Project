@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage.jsx"
 import EmailVerificationPage from "./pages/EmailVerificationPage.jsx"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx"
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx"
+import Error404 from "./pages/Error404.jsx"
 
 
 // protect routes that require authentication
@@ -107,6 +108,13 @@ function App() {
             <RedirectAuthenticatedUser>
               <ResetPasswordPage />
             </RedirectAuthenticatedUser>
+          }
+        />
+        
+        <Route 
+          path="*"
+          element={
+            <Error404 />
           }
         />
 

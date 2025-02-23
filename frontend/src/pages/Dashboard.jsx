@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from "framer-motion";
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../store/useAuthStore.js';
 import { formatDate } from "../utils/date";
 
 const Dashboard = () => {

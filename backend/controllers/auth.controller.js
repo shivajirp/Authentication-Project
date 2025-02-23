@@ -121,9 +121,7 @@ const login = async (req,res) => {
             })
         }
         
-        console.log("problem in bcrypt")
         const isPasswordValid = await bcryptjs.compare(password, user.password);
-        console.log("no not in bcrypt")
         
         if(!isPasswordValid) {
             return res
